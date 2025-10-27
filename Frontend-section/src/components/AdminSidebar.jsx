@@ -29,7 +29,7 @@ const menuItems = [
 ];
 
 const AdminSidebar = () => {
-  const { collapsed, toggleSidebar } = useSidebar();
+  const { collapsed, toggleSidebar, isMobile, mobileSidebarOpen, closeMobileSidebar } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark } = useTheme();
@@ -42,14 +42,37 @@ const AdminSidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  // Mobile sidebar classes
+  const mobileClasses = isMobile 
+    ? `fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`
+    : '';
+
+  // Desktop sidebar classes
+  const desktopClasses = !isMobile 
+    ? `h-screen fixed top-0 left-0 transition-[width] duration-300 ease-in-out z-40 ${
+        collapsed ? "w-16" : "w-64"
+      }`
+    : '';
+
   return (
-    <aside
-      className={`h-screen sticky top-0 transition-[width] duration-300 ease-in-out z-40 flex flex-col overflow-hidden ${
-        isDark
-          ? "bg-gray-800 border-r border-gray-700 text-white"
-          : "bg-white border-r border-gray-200 text-gray-800"
-      } ${collapsed ? "w-16" : "w-64"}`}
-    >
+    <>
+      {/* Mobile overlay */}
+      {isMobile && mobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={closeMobileSidebar}
+        />
+      )}
+      
+      <aside
+        className={`flex flex-col overflow-hidden ${
+          isDark
+            ? "bg-gray-800 border-r border-gray-700 text-white"
+            : "bg-white border-r border-gray-200 text-gray-800"
+        } ${mobileClasses} ${desktopClasses}`}
+      >
       {/* Header */}
       <div
         className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} p-4 border-b ${
@@ -76,30 +99,36 @@ const AdminSidebar = () => {
               </span>
             </div>
             
-            {/* Collapse Button */}
+            {/* Collapse Button - Desktop Only */}
+            {!isMobile && (
+              <button
+                onClick={toggleSidebar}
+                className={`p-1.5 rounded-lg transition-all duration-200 ${
+                  isDark
+                    ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                }`}
+                title="Collapse sidebar"
+              >
+                <FaChevronLeft className="text-sm" />
+              </button>
+            )}
+          </>
+        ) : (
+          /* Collapsed State - Only Hamburger */
+          !isMobile && (
             <button
               onClick={toggleSidebar}
-              className={`p-1.5 rounded-lg transition-all duration-200 ${
+              className={`p-2 rounded-lg transition-all duration-200 ${
                 isDark
                   ? "text-gray-400 hover:text-white hover:bg-gray-700"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               }`}
+              title="Expand sidebar"
             >
-              <FaChevronLeft className="text-sm" />
+              <FaBars className="text-lg" />
             </button>
-          </>
-        ) : (
-          /* Collapsed State - Only Hamburger */
-          <button
-            onClick={toggleSidebar}
-            className={`p-2 rounded-lg transition-all duration-200 ${
-              isDark
-                ? "text-gray-400 hover:text-white hover:bg-gray-700"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-            }`}
-          >
-            <FaBars className="text-lg" />
-          </button>
+          )
         )}
       </div>
 
@@ -110,6 +139,11 @@ const AdminSidebar = () => {
             <li key={item.name}>
               <Link
                 to={item.link}
+                onClick={() => {
+                  if (isMobile) {
+                    closeMobileSidebar();
+                  }
+                }}
                 className={`flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 ${
                   isActive(item.link)
                     ? isDark
@@ -151,7 +185,12 @@ const AdminSidebar = () => {
         </div>
         <div className={`${collapsed ? 'flex justify-center' : ''}`}>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              if (isMobile) {
+                closeMobileSidebar();
+              }
+              handleLogout();
+            }}
             className={`${collapsed ? 'w-28' : 'w-full'} flex items-center ${collapsed ? 'justify-center' : 'justify-start'} px-4 py-2 rounded-lg transition-all duration-200 ${
               isDark
                 ? "text-red-400 hover:text-red-300 hover:bg-red-900/30"
@@ -165,7 +204,8 @@ const AdminSidebar = () => {
           </button>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

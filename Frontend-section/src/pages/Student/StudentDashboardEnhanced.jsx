@@ -6,11 +6,13 @@ import BookList from "./BookListEnhanced";
 import MyBooks from "./MyBooksEnhanced";
 import EventsCarousel from "@/components/EventsCarousel";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { FaBook, FaUser, FaClock, FaSearch } from "react-icons/fa";
 import { borrowAPI, authAPI } from "@/services/api";
 
 const StudentDashboardEnhanced = () => {
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
   const [activeTab, setActiveTab] = useState("books");
   const [borrowingStatus, setBorrowingStatus] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -153,7 +155,9 @@ const StudentDashboardEnhanced = () => {
       className={`flex min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}
     >
       <StudentSidebar />
-      <main className="flex-1 p-5 md:p-6">
+      <main className={`flex-1 transition-all duration-300 p-5 md:p-6 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
         <StudentNavbar />
 
         {/* Header Section (under navbar) */}

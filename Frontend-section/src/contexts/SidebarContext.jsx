@@ -12,6 +12,19 @@ export const useSidebar = () => {
 
 export const SidebarProvider = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   // Load sidebar state from localStorage on mount
   useEffect(() => {
@@ -27,13 +40,24 @@ export const SidebarProvider = ({ children }) => {
   }, [collapsed]);
 
   const toggleSidebar = () => {
-    setCollapsed(prev => !prev);
+    if (isMobile) {
+      setMobileSidebarOpen(prev => !prev);
+    } else {
+      setCollapsed(prev => !prev);
+    }
+  };
+
+  const closeMobileSidebar = () => {
+    setMobileSidebarOpen(false);
   };
 
   const value = {
     collapsed,
     setCollapsed,
-    toggleSidebar
+    toggleSidebar,
+    isMobile,
+    mobileSidebarOpen,
+    closeMobileSidebar
   };
 
   return (

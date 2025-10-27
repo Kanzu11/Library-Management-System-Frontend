@@ -4,16 +4,20 @@ import StudentNavbar from "@/components/StudentNavbar";
 import Footer from "@/components/Footer";
 import BookList from "./BookListEnhanced";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const BrowseBooks = () => {
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   return (
     <div
       className={`flex min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}
     >
       <StudentSidebar />
-      <main className="flex-1 p-6">
+      <main className={`flex-1 transition-all duration-300 p-6 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
         <StudentNavbar />
 
         {/* Header Section */}

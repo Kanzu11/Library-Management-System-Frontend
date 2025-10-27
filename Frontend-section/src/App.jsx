@@ -4,6 +4,8 @@ import { Route, Router, Routes } from "react-router-dom";
 import AdminDashboard from "./pages/Admin/AdminDashboardModern";
 import StudentDashboard from "./pages/Student/StudentDashboardEnhanced";
 import SignUp from "./pages/Auth/SignUp";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import AddBook from "./pages/Admin/AddBook";
 import Orders from "./pages/Admin/Orders";
@@ -48,6 +50,8 @@ const App = () => {
         <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Admin Routes */}
         <Route
@@ -116,14 +120,14 @@ const App = () => {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/student/book/:id"
           element={
             <PrivateRoute role="student">
               <StudentBookDetail />
             </PrivateRoute>
           }
-        />
+        /> */}
         <Route
           path="/student/browse-books"
           element={

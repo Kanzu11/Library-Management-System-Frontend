@@ -8,6 +8,7 @@ import { authAPI, borrowAPI } from "@/services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaCreditCard, FaExclamationTriangle, FaClock, FaCheckCircle } from "react-icons/fa";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -16,6 +17,7 @@ const Profile = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [borrowingStatus, setBorrowingStatus] = useState(null);
   const navigate = useNavigate();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   useEffect(() => {
     let isMounted = true;
@@ -58,11 +60,13 @@ const Profile = () => {
   }, []);
 
   return (
-    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900 overflow-x-hidden">
       <StudentSidebar />
-      <main className="flex-1 px-6 py-3">
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-1' : 'px-6'} py-3 max-w-full overflow-x-hidden ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
         <StudentNavbar />
-        <h1 className="text-2xl font-semibold mt-6 mb-4 text-gray-900 dark:text-gray-100">My Profile</h1>
+        <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-semibold mt-6 mb-4 text-gray-900 dark:text-gray-100`}>My Profile</h1>
 
         {loading && (
           <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">Loading...</div>
@@ -73,20 +77,20 @@ const Profile = () => {
         )}
 
         {!loading && !error && profile && (
-          <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-4">
+          <div className={`${isMobile ? 'p-3' : 'p-6'} rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-4 w-full max-w-full overflow-x-hidden`}>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Username</p>
-              <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{profile.username}</p>
+              <p className={`${isMobile ? 'text-base' : 'text-lg'} font-medium text-gray-900 dark:text-gray-100`}>{profile.username}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-              <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{profile.email}</p>
+              <p className={`${isMobile ? 'text-base' : 'text-lg'} font-medium text-gray-900 dark:text-gray-100`}>{profile.email}</p>
             </div>
             {profile.membershipStatus && (
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Membership Status</p>
                 <div className="flex items-center gap-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  <span className={`${isMobile ? 'px-2 py-1' : 'px-3 py-1'} rounded-full text-sm font-medium ${
                     profile.membershipStatus === "approved" 
                       ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                       : profile.membershipStatus === "pending" || profile.membershipStatus === "waiting_for_approval"
@@ -107,7 +111,7 @@ const Profile = () => {
 
             {/* Subscription Section for Pending Users */}
             {profile.membershipStatus === "pending" && (
-              <div className={`p-4 rounded-lg border ${
+              <div className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border ${
                 profile.membershipStatus === "pending" 
                   ? "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20" 
                   : "border-gray-200 dark:border-gray-700"
@@ -118,13 +122,13 @@ const Profile = () => {
                     Membership Pending
                   </h3>
                 </div>
-                <p className="text-sm text-orange-700 dark:text-orange-300 mb-4">
+                <p className="text-sm text-orange-700 dark:text-orange-300 mb-4 break-words">
                   Your membership is currently pending approval. To activate your library membership, 
                   please subscribe to one of our membership plans.
                 </p>
                 <button
                   onClick={() => setShowPaymentModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors w-full"
                 >
                   <FaCreditCard />
                   Subscribe Now
@@ -134,14 +138,14 @@ const Profile = () => {
 
             {/* Waiting for Approval Section */}
             {profile.membershipStatus === "waiting_for_approval" && (
-              <div className="p-4 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+              <div className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20`}>
                 <div className="flex items-center gap-2 mb-3">
                   <FaClock className="text-blue-600 dark:text-blue-400" />
                   <h3 className="text-lg font-medium text-blue-800 dark:text-blue-200">
                     Waiting for Approval
                   </h3>
                 </div>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-4 break-words">
                   Your payment proof has been submitted successfully. Your membership is now under review 
                   by our administrators. You will be notified once it's approved.
                 </p>
@@ -153,14 +157,14 @@ const Profile = () => {
 
             {/* Approved Section */}
             {profile.membershipStatus === "approved" && (
-              <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
+              <div className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20`}>
                 <div className="flex items-center gap-2 mb-3">
                   <FaCheckCircle className="text-green-600 dark:text-green-400" />
                   <h3 className="text-lg font-medium text-green-800 dark:text-green-200">
                     Membership Approved
                   </h3>
                 </div>
-                <p className="text-sm text-green-700 dark:text-green-300">
+                <p className="text-sm text-green-700 dark:text-green-300 break-words">
                   Congratulations! Your membership has been approved. You can now borrow books from the library.
                 </p>
               </div>
@@ -168,14 +172,14 @@ const Profile = () => {
 
             {/* Canceled/Rejected Section */}
             {profile.membershipStatus === "canceled" && (
-              <div className="p-4 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20">
+              <div className={`${isMobile ? 'p-3' : 'p-4'} rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20`}>
                 <div className="flex items-center gap-2 mb-3">
                   <FaExclamationTriangle className="text-red-600 dark:text-red-400" />
                   <h3 className="text-lg font-medium text-red-800 dark:text-red-200">
                     Membership Canceled
                   </h3>
                 </div>
-                <p className="text-sm text-red-700 dark:text-red-300 mb-4">
+                <p className="text-sm text-red-700 dark:text-red-300 mb-4 break-words">
                   Your membership application was canceled. You can start the subscription process again.
                 </p>
                 <button
@@ -187,7 +191,7 @@ const Profile = () => {
                     toast.success("Status reset. You can now subscribe again.");
                     window.location.reload();
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors w-full"
                 >
                   <FaCreditCard />
                   Try Again
@@ -195,9 +199,9 @@ const Profile = () => {
               </div>
             )}
 
-            <div className="pt-4">
+            <div className="pt-4 w-full">
               <button
-                className={`px-4 py-2 rounded text-white ${
+                className={`${isMobile ? 'w-full' : ''} px-4 py-2 rounded text-white ${
                   borrowingStatus && (borrowingStatus.totalBorrowed > 0 || borrowingStatus.totalReserved > 0)
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-red-600 hover:bg-red-700"
@@ -260,7 +264,7 @@ const Profile = () => {
                 Delete Account
               </button>
               {borrowingStatus && (borrowingStatus.totalBorrowed > 0 || borrowingStatus.totalReserved > 0) && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 break-words">
                   You cannot delete your account while you have active borrows or reservations. 
                   Please return all books and cancel reservations first.
                 </p>

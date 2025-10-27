@@ -1,5 +1,6 @@
 import AdminSidebar from "@/components/AdminSidebar";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -63,6 +64,7 @@ const quickActions = [
 
 const AdminDashboardModern = () => {
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -143,28 +145,28 @@ const AdminDashboardModern = () => {
       {
         title: "Total Books",
         value: String(totalBooks),
-        icon: <FaBook className="text-blue-500" />,
+        icon: <FaBook className="text-white" />,
         description: "Books in catalog",
         bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
       },
       {
         title: "Active Users",
         value: String(activeUsers),
-        icon: <FaUsers className="text-green-500" />,
+        icon: <FaUsers className="text-white" />,
         description: "Registered users",
         bgColor: "bg-gradient-to-br from-green-500 to-green-600",
       },
       {
         title: "Borrowed Copies",
         value: String(borrowedCopies),
-        icon: <FaClipboardList className="text-yellow-500" />,
+        icon: <FaClipboardList className="text-white" />,
         description: "Currently on loan",
         bgColor: "bg-gradient-to-br from-yellow-500 to-yellow-600",
       },
       {
         title: "Pending Reservations",
         value: String(pendingReservations),
-        icon: <FaUsers className="text-purple-500" />,
+        icon: <FaUsers className="text-white" />,
         description: "Awaiting confirmation",
         bgColor: "bg-gradient-to-br from-purple-500 to-purple-600",
       },
@@ -234,8 +236,10 @@ const AdminDashboardModern = () => {
       }`}
     >
       <AdminSidebar />
-      <main className="flex-1 px-6 py-6">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-6 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
 
         {/* Header Section */}
         <div className="mb-8 pt-6 md:pt-8">
@@ -324,7 +328,7 @@ const AdminDashboardModern = () => {
             >
               <div className={`${stat.bgColor} p-4 text-white`}>
                 <div className="flex items-center justify-between">
-                  <div className="text-3xl opacity-80">{stat.icon}</div>
+                  <div className="text-3xl">{stat.icon}</div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">{stat.value}</div>
                     <div className="text-sm opacity-90">{stat.title}</div>

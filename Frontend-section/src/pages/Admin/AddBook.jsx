@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import React, { useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   Card,
   CardContent,
@@ -19,6 +20,7 @@ import toast from "react-hot-toast";
 
 const AddBook = () => {
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -138,8 +140,10 @@ const AddBook = () => {
       }`}
     >
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
 
         <div className="max-w-4xl mx-auto">
           <h1

@@ -5,6 +5,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ const Bookdetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -127,6 +129,23 @@ const Bookdetail = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    
+    // Validate available copies vs total copies
+    if (availableCopies > totalCopies) {
+      toast.error("Available copies cannot be greater than total copies");
+      return;
+    }
+    
+    if (availableCopies < 0) {
+      toast.error("Available copies cannot be negative");
+      return;
+    }
+    
+    if (totalCopies < 0) {
+      toast.error("Total copies cannot be negative");
+      return;
+    }
+    
     try {
       await booksAPI.updateBook(id, {
         title,
@@ -152,8 +171,10 @@ const Bookdetail = () => {
       }`}
     >
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
 
         <div className="max-w-6xl mx-auto">
           <h1
@@ -315,7 +336,14 @@ const Bookdetail = () => {
                         type="number"
                         min="0"
                         value={totalCopies}
-                        onChange={(e) => setTotalCopies(Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          setTotalCopies(value);
+                          // Auto-adjust available copies if it exceeds total
+                          if (availableCopies > value) {
+                            setAvailableCopies(value);
+                          }
+                        }}
                         placeholder="Total copies"
                         className={
                           isDark ? "bg-gray-700 border-gray-600 text-white" : ""
@@ -336,8 +364,16 @@ const Bookdetail = () => {
                         id="availableCopies"
                         type="number"
                         min="0"
+                        max={totalCopies}
                         value={availableCopies}
-                        onChange={(e) => setAvailableCopies(Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (value <= totalCopies) {
+                            setAvailableCopies(value);
+                          } else {
+                            toast.error("Available copies cannot exceed total copies");
+                          }
+                        }}
                         placeholder="Available copies"
                         className={
                           isDark ? "bg-gray-700 border-gray-600 text-white" : ""

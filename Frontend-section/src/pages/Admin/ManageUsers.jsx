@@ -6,6 +6,7 @@ import { usersAPI } from "@/services/api";
 import toast from "react-hot-toast";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -13,6 +14,7 @@ const ManageUsers = () => {
   const [error, setError] = useState("");
   const currentUser = useMemo(() => JSON.parse(localStorage.getItem("user") || "{}"), []);
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   const isSuperAdmin = currentUser.role === "super_admin" || currentUser.role === "superadmin" || currentUser.username === "superadmin";
 
@@ -121,11 +123,13 @@ const ManageUsers = () => {
   const regularUsers = users.filter((u) => u.role === "user");
 
   return (
-    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900 overflow-x-hidden">
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
-        <h1 className="text-3xl font-bold pt-4 text-blue-600 dark:text-white mb-4">Manage Users</h1>
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 max-w-full overflow-x-hidden ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
+        <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold pt-4 text-blue-600 dark:text-white mb-4`}>Manage Users</h1>
 
         {error && (
           <div className="mb-4 p-3 rounded border border-red-200 bg-red-50 text-red-700">{error}</div>
@@ -137,16 +141,16 @@ const ManageUsers = () => {
           <>
             {/* Only show Admins section for Superadmin */}
             {isSuperAdmin && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Admins</h2>
-                <div className="overflow-x-auto rounded border bg-white dark:bg-gray-800 dark:border-gray-700">
-                  <table className="min-w-full">
+              <div className="mb-6 w-full max-w-full">
+                <h2 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold mb-2 text-gray-900 dark:text-gray-100`}>Admins</h2>
+                <div className="overflow-x-auto rounded border bg-white dark:bg-gray-800 dark:border-gray-700 max-w-full">
+                  <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50 dark:bg-gray-900/40">
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Username</th>
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Email</th>
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Role</th>
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Actions</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Username</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Email</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Role</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -156,14 +160,14 @@ const ManageUsers = () => {
                         const canDemote = isSuperAdmin && u.role === "admin" && !isSelf;
                         return (
                           <tr key={u._id} className="border-t dark:border-gray-700">
-                            <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
-                            <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{u.email}</td>
-                            <td className="px-4 py-2 capitalize text-gray-900 dark:text-gray-100">{u.role?.replace("_", " ")}</td>
-                            <td className="px-4 py-2 space-x-2">
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 text-gray-900 dark:text-gray-100 break-words`}>{u.username}</td>
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 text-gray-900 dark:text-gray-100 break-words`}>{u.email}</td>
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 capitalize text-gray-900 dark:text-gray-100`}>{u.role?.replace("_", " ")}</td>
+                            <td className={`${isMobile ? 'px-2' : 'px-4'} py-2 ${isMobile ? 'flex flex-wrap gap-1' : ''}`}>
                               {canDemote && (
                                 <button
                                   onClick={() => handleDemote(u._id)}
-                                  className="px-3 py-1 text-sm rounded bg-yellow-600 hover:bg-yellow-700 text-white"
+                                  className={`${isMobile ? 'w-full mb-1' : ''} px-3 py-1 text-sm rounded bg-yellow-600 hover:bg-yellow-700 text-white`}
                                 >
                                   Demote to User
                                 </button>
@@ -194,7 +198,7 @@ const ManageUsers = () => {
                                       </div>
                                     ))
                                   }
-                                  className="px-3 py-1 text-sm rounded bg-red-600 hover:bg-red-700 text-white"
+                                  className={`${isMobile ? 'w-full' : ''} px-3 py-1 text-sm rounded bg-red-600 hover:bg-red-700 text-white`}
                                 >
                                   Delete
                                 </button>
@@ -209,32 +213,32 @@ const ManageUsers = () => {
               </div>
             )}
 
-            <div>
-              <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Users</h2>
-              <div className="overflow-x-auto rounded border bg-white dark:bg-gray-800 dark:border-gray-700">
-                <table className="min-w-full">
-                  <thead>
-                    <tr className="bg-gray-50 dark:bg-gray-900/40">
-                      <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Username</th>
-                      <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Email</th>
-                      <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Role</th>
-                      <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {regularUsers.map((u) => {
-                      const canDelete = isSuperAdmin || u.role === "user"; // admin can delete only regular users
-                      const canPromote = isSuperAdmin && u.role === "user"; // only superadmin can promote
-                      return (
-                        <tr key={u._id} className="border-t dark:border-gray-700">
-                          <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
-                          <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{u.email}</td>
-                          <td className="px-4 py-2 capitalize text-gray-900 dark:text-gray-100">{u.role?.replace("_", " ")}</td>
-                          <td className="px-4 py-2 space-x-2">
+            <div className="w-full max-w-full">
+              <h2 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold mb-2 text-gray-900 dark:text-gray-100`}>Users</h2>
+              <div className="overflow-x-auto rounded border bg-white dark:bg-gray-800 dark:border-gray-700 max-w-full">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50 dark:bg-gray-900/40">
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Username</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Email</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Role</th>
+                        <th className={`${isMobile ? 'px-2' : 'px-4'} py-2 text-left ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700 dark:text-gray-200`}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {regularUsers.map((u) => {
+                        const canDelete = isSuperAdmin || u.role === "user"; // admin can delete only regular users
+                        const canPromote = isSuperAdmin && u.role === "user"; // only superadmin can promote
+                        return (
+                          <tr key={u._id} className="border-t dark:border-gray-700">
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 text-gray-900 dark:text-gray-100 break-words`}>{u.username}</td>
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 text-gray-900 dark:text-gray-100 break-words`}>{u.email}</td>
+                            <td className={`${isMobile ? 'px-2 text-xs' : 'px-4 text-sm'} py-2 capitalize text-gray-900 dark:text-gray-100`}>{u.role?.replace("_", " ")}</td>
+                          <td className={`${isMobile ? 'px-2' : 'px-4'} py-2 ${isMobile ? 'flex flex-wrap gap-1' : ''}`}>
                             {canPromote && (
                               <button
                                 onClick={() => handlePromote(u._id)}
-                                className="px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white"
+                                className={`${isMobile ? 'w-full mb-1' : ''} px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white`}
                               >
                                 Promote to Admin
                               </button>
@@ -265,7 +269,7 @@ const ManageUsers = () => {
                                     </div>
                                   ))
                                 }
-                                className="px-3 py-1 text-sm rounded bg-red-600 hover:bg-red-700 text-white"
+                                className={`${isMobile ? 'w-full' : ''} px-3 py-1 text-sm rounded bg-red-600 hover:bg-red-700 text-white`}
                               >
                                 Delete
                               </button>
@@ -281,11 +285,11 @@ const ManageUsers = () => {
 
             {/* Pagination Controls */}
             {!loading && users.length > 0 && (
-              <div className="flex items-center justify-between mt-6">
+              <div className={`flex ${isMobile ? 'flex-col items-start' : 'flex-row items-center'} justify-between mt-6 gap-4 w-full max-w-full`}>
                 {/* Rows per page selector */}
                 <div className="flex items-center gap-2">
                   <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                    Rows per page:
+                    {isMobile ? 'Rows:' : 'Rows per page:'}
                   </span>
                   <select
                     value={pagination.limit}
@@ -304,8 +308,8 @@ const ManageUsers = () => {
                 </div>
 
                 {/* Pagination info and navigation */}
-                <div className="flex items-center gap-4">
-                  <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-row items-center gap-4'}`}>
+                  <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"} break-words`}>
                     {((pagination.currentPage - 1) * pagination.limit) + 1}–
                     {Math.min(pagination.currentPage * pagination.limit, pagination.totalCount)} of {pagination.totalCount}
                   </span>

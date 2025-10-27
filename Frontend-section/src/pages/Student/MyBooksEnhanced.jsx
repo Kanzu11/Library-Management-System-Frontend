@@ -266,7 +266,7 @@ Return Requested
                           </span>
                         </div>
                       )}
-                      {borrow.reservationExpiry && (
+                      {borrow.status === 'reserved' && borrow.reservationExpiry &&(
                         <div className="flex items-center space-x-2">
                           <FaClock
                             className={isDark ? "text-yellow-400" : "text-yellow-600"}

@@ -20,23 +20,7 @@ const Footer = () => {
             Powered by <span className="font-bold text-blue-600">ASTUMSJ</span>
           </span>
         </div>
-        <div className="flex space-x-4">
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-600 transition"
-          >
-            <FaFacebook className="text-xl" />
-          </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-600 transition"
-          >
-            <FaTwitter className="text-xl" />
-          </a>
+        <div className="flex space-x-6">
           <a
             href="https://t.me/ASTU_MSJ"
             target="_blank"

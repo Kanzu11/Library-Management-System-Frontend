@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { authAPI, borrowAPI } from "@/services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const AdminProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -12,6 +13,7 @@ const AdminProfile = () => {
   const [error, setError] = useState("");
   const [borrowingStatus, setBorrowingStatus] = useState(null);
   const navigate = useNavigate();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   useEffect(() => {
     let isMounted = true;
@@ -101,11 +103,13 @@ const AdminProfile = () => {
   };
 
   return (
-    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-row min-h-screen bg-gray-100 dark:bg-gray-900 overflow-x-hidden">
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
-        <h1 className="text-2xl font-semibold mt-6 mb-4 text-gray-900 dark:text-gray-100">My Profile</h1>
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 max-w-full overflow-x-hidden ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
+        <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-semibold mt-6 mb-4 text-gray-900 dark:text-gray-100`}>My Profile</h1>
 
         {loading && (
           <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">Loading...</div>
@@ -116,7 +120,7 @@ const AdminProfile = () => {
         )}
 
         {!loading && !error && profile && (
-          <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-4">
+          <div className={`${isMobile ? 'p-4' : 'p-6'} rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-4 w-full max-w-full overflow-x-hidden`}>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Username</p>
               <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{profile.username}</p>
@@ -139,9 +143,9 @@ const AdminProfile = () => {
             </div>
 
             {(profile.role !== "superadmin" && profile.username !== "superadmin") && (
-              <div className="pt-4">
+              <div className="pt-4 w-full">
                 <button
-                  className={`px-4 py-2 rounded text-white ${
+                  className={`${isMobile ? 'w-full' : ''} px-4 py-2 rounded text-white ${
                     borrowingStatus && (borrowingStatus.totalBorrowed > 0 || borrowingStatus.totalReserved > 0)
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-red-600 hover:bg-red-700"
@@ -152,7 +156,7 @@ const AdminProfile = () => {
                   Delete Account
                 </button>
                 {borrowingStatus && (borrowingStatus.totalBorrowed > 0 || borrowingStatus.totalReserved > 0) && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 break-words">
                     You cannot delete your account while you have active borrows or reservations. 
                     Please return all books and cancel reservations first.
                   </p>

@@ -104,15 +104,25 @@ const InputForm = () => {
         >
           Login
         </Button>
-        <p className="text-center text-blue-900 mt-2">
-          Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-blue-600 font-semibold hover:underline"
-          >
-            Register here
-          </Link>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-blue-900">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Register here
+            </Link>
+          </p>
+          <p className="text-blue-900">
+            <Link
+              to="/forgot-password"
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );

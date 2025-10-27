@@ -127,7 +127,7 @@ const PaymentHistory = () => {
   }
 
   return (
-    <Card className={`${isDark ? "bg-gray-800" : "bg-white"}`}>
+    <Card className={`${isDark ? "bg-gray-800" : "bg-white"} w-full max-w-full overflow-hidden`}>
       <CardHeader>
         <CardTitle className={`flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}>
           <FaCreditCard />
@@ -137,7 +137,7 @@ const PaymentHistory = () => {
           View your membership payment history and status
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full max-w-full overflow-hidden">
         {paymentHistory.length === 0 ? (
           <div className="text-center py-8">
             <FaCreditCard className="mx-auto text-gray-400 text-4xl mb-4" />
@@ -204,7 +204,7 @@ const PaymentHistory = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-6 gap-4 w-full">
               {/* Rows per page selector */}
               <div className="flex items-center gap-2">
                 <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
@@ -227,8 +227,8 @@ const PaymentHistory = () => {
               </div>
 
               {/* Pagination info and navigation */}
-              <div className="flex items-center gap-4">
-                <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 w-full md:w-auto">
+                <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"} break-words`}>
                   Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to{' '}
                   {Math.min(pagination.currentPage * pagination.limit, pagination.totalCount)} of{' '}
                   {pagination.totalCount} entries

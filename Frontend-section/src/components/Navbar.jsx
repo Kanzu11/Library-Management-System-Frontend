@@ -7,11 +7,13 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // Removed ThemeToggle from Navbar to avoid duplication with Sidebar
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import logo from "@/assets/logo.jpg";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDark } = useTheme();
+  const { isMobile, toggleSidebar } = useSidebar();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,6 +38,20 @@ const Navbar = () => {
               : "bg-white/30 border-gray-200/50 text-gray-800 shadow-lg shadow-gray-200/20"
           }`}
         >
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <button
+              onClick={toggleSidebar}
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                isDark
+                  ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }`}
+            >
+              <FaBars className="text-lg" />
+            </button>
+          )}
+
           {/* Logo/Brand */}
           <Link
             to="/admin"
@@ -86,14 +102,18 @@ const Navbar = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => navigate('/admin/profile')}
-                className={`p-2 rounded-full ${
+                className={`p-2 rounded-full group relative ${
                   isDark ? "bg-gray-800" : "bg-gray-100"
-                } hover:opacity-90 transition-opacity`}
+                } hover:opacity-90 transition-all duration-300 hover:scale-110 hover:shadow-lg ${
+                  isDark 
+                    ? "hover:bg-gray-700 hover:shadow-gray-900/50" 
+                    : "hover:bg-gray-200 hover:shadow-gray-300/50"
+                }`}
                 title="My Profile"
               >
                 <FaUserCircle
-                  className={`text-xl ${
-                    isDark ? "text-gray-400" : "text-gray-600"
+                  className={`text-xl transition-all duration-300 ${
+                    isDark ? "text-gray-400 group-hover:text-blue-400" : "text-gray-600 group-hover:text-blue-600"
                   }`}
                 />
               </button>
@@ -109,7 +129,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile menu button */}
-            <button
+            {/* <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`md:hidden p-2 rounded-lg transition-colors ${
                 isDark
@@ -122,7 +142,7 @@ const Navbar = () => {
               ) : (
                 <FaBars className="text-lg" />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
 

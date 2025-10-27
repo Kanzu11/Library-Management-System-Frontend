@@ -3,12 +3,14 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { FaCheck, FaTimes, FaClock, FaExclamationTriangle, FaBook, FaUser, FaCalendarAlt, FaCreditCard, FaEye, FaCheckCircle, FaBan, FaChevronDown, FaChevronUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { borrowAPI, utils, paymentAPI } from "@/services/api";
 import toast from "react-hot-toast";
 
 const Orders = () => {
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
   const [borrows, setBorrows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -249,8 +251,10 @@ const Orders = () => {
     return (
       <div className={`flex flex-row min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
         <AdminSidebar />
-        <main className="flex-1 px-6 py-3">
-          <Navbar />
+        <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+          isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+        }`}>
+          {!(isMobile && mobileSidebarOpen) && <Navbar />}
           <div className="flex justify-center items-center h-64">
             <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${isDark ? "border-blue-400" : "border-blue-600"}`}></div>
           </div>
@@ -263,8 +267,10 @@ const Orders = () => {
   return (
     <div className={`flex flex-row min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
           <div className={`text-center py-12 ${isDark ? "text-gray-200" : "text-gray-800"}`}>
             <FaExclamationTriangle className={`text-4xl mx-auto mb-4 ${isDark ? "text-red-400" : "text-red-500"}`} />
             <h3 className={`text-lg font-semibold mb-2 ${isDark ? "text-red-400" : "text-red-600"}`}>Error</h3>
@@ -284,8 +290,10 @@ const Orders = () => {
   return (
     <div className={`flex flex-row min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
         
         <div className="w-full max-w-none">
           <div className="mb-6 pt-6 md:pt-8">

@@ -44,6 +44,9 @@ export const authAPI = {
   register: (userData) => api.post('/users/register', userData),
   getProfile: () => api.get('/users/profile'),
   deleteProfile: () => api.delete('/users/profile'),
+  forgotPassword: (email) => api.post('/users/forgot-password', { email }),
+  validateResetToken: (token) => api.get(`/users/reset-password/${token}`),
+  resetPassword: (token, password) => api.post(`/users/reset-password/${token}`, { password }),
 };
 
 // Books API

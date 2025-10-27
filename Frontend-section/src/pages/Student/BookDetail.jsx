@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import books from "@/demo/Bookdata";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { FaBook, FaUser, FaClock } from "react-icons/fa";
 import StudentSidebar from "@/components/StudentSidebar";
 import StudentNavbar from "@/components/StudentNavbar";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 const BookDetail = () => {
   const { id } = useParams();
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   // Find the book by ID
   const book = books.find((b) => b.id === parseInt(id));
@@ -74,7 +76,9 @@ const BookDetail = () => {
       className={`flex min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}
     >
       <StudentSidebar />
-      <main className="flex-1 p-6">
+      <main className={`flex-1 p-6 transition-all duration-300 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
         <StudentNavbar />
 
         <div

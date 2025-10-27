@@ -1,5 +1,6 @@
 import AdminSidebar from "@/components/AdminSidebar";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import React, { useState, useMemo, useEffect } from "react";
 import { booksAPI } from "@/services/api";
 import BookCardEnhanced from "@/components/BookCardEnhanced";
@@ -26,6 +27,7 @@ const ManageBookModern = () => {
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
   const { isDark } = useTheme();
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,34 +89,36 @@ const ManageBookModern = () => {
     // Sort books
     filtered.sort((a, b) => {
       let aValue, bValue;
+      let result = 0;
 
       switch (sortBy) {
         case "title":
           aValue = (a.title || "").toLowerCase();
           bValue = (b.title || "").toLowerCase();
+          result = aValue.localeCompare(bValue);
           break;
         case "author":
           aValue = (a.author || "").toLowerCase();
           bValue = (b.author || "").toLowerCase();
+          result = aValue.localeCompare(bValue);
           break;
         case "available":
-          aValue = (Number(a.availableCopies) || 0);
-          bValue = (Number(b.availableCopies) || 0);
+          aValue = Number(a.availableCopies) || 0;
+          bValue = Number(b.availableCopies) || 0;
+          result = aValue - bValue;
           break;
         case "borrowed":
           aValue = (Number(a.totalCopies) || 0) - (Number(a.availableCopies) || 0);
           bValue = (Number(b.totalCopies) || 0) - (Number(b.availableCopies) || 0);
+          result = aValue - bValue;
           break;
         default:
           aValue = (a.title || "").toLowerCase();
           bValue = (b.title || "").toLowerCase();
+          result = aValue.localeCompare(bValue);
       }
 
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
+      return sortOrder === "asc" ? result : -result;
     });
 
     return filtered;
@@ -144,8 +148,10 @@ const ManageBookModern = () => {
       }`}
     >
       <AdminSidebar />
-      <main className="flex-1 px-6 py-6">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-6 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
 
         {/* Header Section */}
         <div className="mb-8 pt-6 md:pt-8">

@@ -72,23 +72,22 @@ const BookListEnhanced = () => {
 
       switch (sortBy) {
         case "title":
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-          break;
+          aValue = (a.title || "").toLowerCase();
+          bValue = (b.title || "").toLowerCase();
+          return aValue.localeCompare(bValue);
         case "author":
-          aValue = a.author.toLowerCase();
-          bValue = b.author.toLowerCase();
-          break;
+          aValue = (a.author || "").toLowerCase();
+          bValue = (b.author || "").toLowerCase();
+          return aValue.localeCompare(bValue);
         case "available":
-          aValue = a.availableCopies;
-          bValue = b.availableCopies;
-          break;
+          aValue = Number(a.availableCopies) || 0;
+          bValue = Number(b.availableCopies) || 0;
+          return aValue - bValue;
         default:
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
+          aValue = (a.title || "").toLowerCase();
+          bValue = (b.title || "").toLowerCase();
+          return aValue.localeCompare(bValue);
       }
-
-      return aValue > bValue ? 1 : -1;
     });
 
     return filtered;

@@ -1,5 +1,6 @@
 import AdminSidebar from "@/components/AdminSidebar";
 import { useTheme } from "@/contexts/ThemeContext"; // Import useTheme
+import { useSidebar } from "@/contexts/SidebarContext";
 import React from "react";
 import {
   Card,
@@ -99,6 +100,7 @@ const recentActivities = [
 
 const AdminDashboard = () => {
   const { isDark } = useTheme(); // Retrieve isDark from useTheme
+  const { isMobile, mobileSidebarOpen, collapsed } = useSidebar();
 
   return (
     <div
@@ -107,8 +109,10 @@ const AdminDashboard = () => {
       }`}
     >
       <AdminSidebar />
-      <main className="flex-1 px-6 py-3">
-        <Navbar />
+      <main className={`flex-1 transition-all duration-300 ${isMobile ? 'px-2' : 'px-6'} py-3 ${
+        isMobile && mobileSidebarOpen ? 'transform translate-x-64' : ''
+      } ${!isMobile ? (collapsed ? 'ml-16' : 'ml-64') : ''}`}>
+        {!(isMobile && mobileSidebarOpen) && <Navbar />}
         <h1
           className={`text-3xl md:text-4xl font-extrabold ${
             isDark ? "text-white" : "text-blue-700"
